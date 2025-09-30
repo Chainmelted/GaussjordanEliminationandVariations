@@ -28,14 +28,14 @@ def create_column(matrix, column_number):
         column.append(rows[column_number-1])
     return column
 
-def format_matrix(matrix):
-    for row in matrix:
-        print(row)
-
 def swap_rows(matrix, i, j):
     temp = matrix[i]
     matrix[i] = matrix[j]
     matrix[j] = temp
+
+def format_matrix(matrix):
+    for row in matrix:
+        print(row)
 
 ########################################################################################
 
