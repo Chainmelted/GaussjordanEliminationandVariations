@@ -14,16 +14,14 @@ def row_division(row,divider):
         builtRow.append(element / divider)
     return builtRow
 
+def row_addition(row1, row2):
+    builtRow = []
+    for i in range(len(row1)):
+        builtRow.append(row1[i] + row2[i])
+    return builtRow
+
 def create_column(matrix, column_number):
     column = []
     for rows in matrix:
         column.append(rows[column_number-1])
     return column
-
-
-
-
-
-
-print(create_column(exampleMatrix, 3))
-# print(row_division(exampleRow, 2))
