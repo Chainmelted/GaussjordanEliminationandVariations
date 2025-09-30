@@ -7,19 +7,23 @@ def row_multiplication(row,multiplier):
     for element in row:
         builtRow.append(element*multiplier)
     return builtRow
+
 def row_division(row,divider):
     builtRow = []
     for element in row:
         builtRow.append(element / divider)
     return builtRow
+
 def create_column(matrix, column_number):
+    column = []
     for rows in matrix:
-        column = []
         column.append(rows[column_number-1])
-        print(column)
+    return column
 
 
 
 
-# print(create_column(exampleMatrix, 3))
+
+
+print(create_column(exampleMatrix, 3))
 # print(row_division(exampleRow, 2))
