@@ -60,41 +60,7 @@ def copy_matrix(M):
         new_M.append(new_row)
     return new_M
 
-def gaussian_elimination(matrix):
-    num_rows = len(matrix)
-    num_cols = len(matrix[0])
 
-    for pivot_row_index in range(num_rows):
-        # Step 1: partial pivoting
-        max_row_index = pivot_row_index
-        for candidate_row_index in range(pivot_row_index, num_rows):
-            if abs(matrix[candidate_row_index][pivot_row_index]) > abs(matrix[max_row_index][pivot_row_index]):
-                max_row_index = candidate_row_index
-        if max_row_index != pivot_row_index:
-            swap_rows(matrix, pivot_row_index, max_row_index)
-
-        # Step 2: divide through pivot row
-        pivot_value = matrix[pivot_row_index][pivot_row_index]
-        matrix[pivot_row_index] = row_division(matrix[pivot_row_index], pivot_value)
-
-        # Step 3: eliminate rows below pivot
-        for lower_row_index in range(pivot_row_index+1, num_rows):
-            factor = matrix[lower_row_index][pivot_row_index]
-            scaled_pivot_row = row_multiplication(matrix[pivot_row_index], factor)
-            matrix[lower_row_index] = row_subtraction(matrix[lower_row_index], scaled_pivot_row)
-
-    #substitution
-    solution = []
-    for variable_index in range(num_rows):
-        solution.append(0)
-
-    for row_index in range(num_rows-1, -1, -1):
-        right_partition = matrix[row_index][num_cols-1]
-        for col_index in range(row_index+1, num_rows):
-            right_partition -= matrix[row_index][col_index] * solution[col_index]
-        solution[row_index] = right_partition / matrix[row_index][row_index]
-
-    return solution
 
 ########################################################################################
 
@@ -156,6 +122,87 @@ def inverse_matrix(matrix):
 
     return inverse
 
+def gaussian_elimination(matrix):
+    num_rows = len(matrix)
+    num_cols = len(matrix[0])
+
+    for pivot_row_index in range(num_rows):
+        # Step 1: partial pivoting
+        max_row_index = pivot_row_index
+        for candidate_row_index in range(pivot_row_index, num_rows):
+            if abs(matrix[candidate_row_index][pivot_row_index]) > abs(matrix[max_row_index][pivot_row_index]):
+                max_row_index = candidate_row_index
+        if max_row_index != pivot_row_index:
+            swap_rows(matrix, pivot_row_index, max_row_index)
+
+        # Step 2: divide through pivot row
+        pivot_value = matrix[pivot_row_index][pivot_row_index]
+        matrix[pivot_row_index] = row_division(matrix[pivot_row_index], pivot_value)
+
+        # Step 3: eliminate rows below pivot
+        for lower_row_index in range(pivot_row_index+1, num_rows):
+            factor = matrix[lower_row_index][pivot_row_index]
+            scaled_pivot_row = row_multiplication(matrix[pivot_row_index], factor)
+            matrix[lower_row_index] = row_subtraction(matrix[lower_row_index], scaled_pivot_row)
+
+    #substitution
+    solution = []
+    for variable_index in range(num_rows):
+        solution.append(0)
+
+    for row_index in range(num_rows-1, -1, -1):
+        right_partition = matrix[row_index][num_cols-1]
+        for col_index in range(row_index+1, num_rows):
+            right_partition -= matrix[row_index][col_index] * solution[col_index]
+        solution[row_index] = right_partition / matrix[row_index][row_index]
+
+    return solution
+
+def determinant_using_gaussian(original_matrix):
+
+    matrix = []
+    for row in original_matrix:
+        new_row = []
+        for entry_value in row:
+            new_row.append(entry_value * 1.0)   # ensure float math
+        matrix.append(new_row)
+
+    num_rows = len(matrix)
+    swap_count = 0
+
+    for pivot_row_index in range(num_rows):
+        max_row_index = pivot_row_index
+        for candidate_row_index in range(pivot_row_index, num_rows):
+            if abs(matrix[candidate_row_index][pivot_row_index]) > abs(matrix[max_row_index][pivot_row_index]):
+                max_row_index = candidate_row_index
+
+        if abs(matrix[max_row_index][pivot_row_index]) == 0:
+            return 0.0
+
+        # Swap into place if needed (flip sign)
+        if max_row_index != pivot_row_index:
+            swap_rows(matrix, pivot_row_index, max_row_index)
+            swap_count = swap_count + 1
+
+        # 2) Eliminate entries BELOW the pivot (zero out the column below)
+        for lower_row_index in range(pivot_row_index + 1, num_rows):
+            elimination_factor = matrix[lower_row_index][pivot_row_index] / matrix[pivot_row_index][pivot_row_index]
+            # row_lower := row_lower - factor * row_pivot
+            for col_index in range(pivot_row_index, num_rows):
+                matrix[lower_row_index][col_index] = (
+                    matrix[lower_row_index][col_index]
+                    - elimination_factor * matrix[pivot_row_index][col_index])
+
+    # 3) Determinant
+    determinant_value = 1.0
+    for diag_index in range(num_rows):
+        determinant_value = determinant_value * matrix[diag_index][diag_index]
+    if (swap_count % 2) == 1:
+        determinant_value = -determinant_value
+
+    return determinant_value
+
+
 
 ##
 if __name__ == "__main__":
@@ -174,3 +221,6 @@ if __name__ == "__main__":
     print("x =", gaussian_result[0])
     print("y =", gaussian_result[1])
     print("z =", gaussian_result[2])
+
+    detA = determinant_using_gaussian(gauss_jordan_matrix_input)
+    print("\nDeterminant of w/ elimination:", detA)
