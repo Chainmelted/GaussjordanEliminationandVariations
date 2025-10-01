@@ -1,9 +1,9 @@
-﻿gauss_jordan_matrix_input = [
+﻿gauss_jordan_matrix_input = [ #2&4
         [1, -1, 0],
         [-2, 2, -1],
         [0, 1, -2]
     ]
-## test algorithm 3
+## test algorithm 1&3 make split equation to extrapolate a matrix / matrices from system
 system = [
     [1, 0, 2, 1],
     [2, -1, 3, -1],
