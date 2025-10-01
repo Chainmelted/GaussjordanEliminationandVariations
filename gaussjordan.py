@@ -1,7 +1,7 @@
 ﻿gauss_jordan_matrix_input = [
-        [1, -1, 0, 2],
-        [-2, 2, -1, -1],
-        [0, 1, -2, 6]
+        [1, -1, 0],
+        [-2, 2, -1],
+        [0, 1, -2]
     ]
 ## Matrix Operations
 def row_multiplication(row,multiplier):
@@ -36,11 +36,21 @@ def swap_rows(matrix, i, j):
 def format_matrix(matrix):
     for row in matrix:
         print(row)
+def copy_matrix(M):
+    new_M = []
+    for row in M:
+        new_row = []
+        for val in row:
+            new_row.append(val)
+        new_M.append(new_row)
+    return new_M
+
 
 ########################################################################################
 
 def gauss_jordan(matrix):
     n = len(matrix)
+    num_cols = len(matrix[0])
 
     # finding the largest magnitude in a column
     for pivot_index in range(n):
@@ -51,27 +61,60 @@ def gauss_jordan(matrix):
         if pivot_row != pivot_index:
             swap_rows(matrix, pivot_index, pivot_row)
 
+        # normalize pivot row
         pivot_value = matrix[pivot_index][pivot_index]
-        matrix[pivot_index] = row_division(matrix[pivot_index], pivot_value)
+        for col in range(num_cols):
+            matrix[pivot_index][col] = matrix[pivot_index][col] / pivot_value
 
+        # eliminate other rows
         for other_row in range(n):
             if other_row != pivot_index:
-                factor = -matrix[other_row][pivot_index]
-                scaled_pivot = row_multiplication(matrix[pivot_index], factor)
-                matrix[other_row] = row_addition(matrix[other_row], scaled_pivot)
+                factor = matrix[other_row][pivot_index]
+                for col in range(num_cols):
+                    matrix[other_row][col] -= factor * matrix[pivot_index][col]
 
     return matrix
+
+def inverse_matrix(matrix):
+    n = len(matrix)
+
+    partitioned = []
+    for row_number in range(n):
+        row = []
+        # left side: original matrix
+        for col_number in range(n):
+            row.append(matrix[row_number][col_number])
+        # right side: identity
+        for col_number in range(n):
+            if row_number == col_number:
+                row.append(1.0)
+            else:
+                row.append(0.0)
+        partitioned.append(row)
+
+    # calling GJ elimination on the identity section
+    reduced = gauss_jordan(partitioned)
+
+    # extract right side as inverse
+    inverse = []
+    for row_number in range(n):
+        row = []
+        for col_number in range(n, 2*n):
+            row.append(reduced[row_number][col_number])
+        inverse.append(row)
+
+    return inverse
 
 
 ##
 if __name__ == "__main__":
+    A_for_GJE = copy_matrix(gauss_jordan_matrix_input)
+    GJE_result = gauss_jordan(A_for_GJE)
 
-    result = gauss_jordan(gauss_jordan_matrix_input)
+    A_for_inverse = copy_matrix(gauss_jordan_matrix_input)
+    GJE_inverse_result = inverse_matrix(A_for_inverse)
 
     print("Matrix w/ Gauss-Jordan:")
-    format_matrix(result)
-
-    solution = []
-    for row in result:
-        solution.append(row[-1])
-    print("Solution:", solution)
+    format_matrix(GJE_result)
+    print("\nInverse matrix:")
+    format_matrix(GJE_inverse_result)
